@@ -1,10 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using DroneBuilderSimulation.Data;
+using DroneBuilderSimulation.Services.Interfaces;
+using DroneBuilderSimulation.Services.Implementations;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IDronePhysicsService, DronePhysicsService>();
+
 
 // 1. Register the Database Context // <---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
