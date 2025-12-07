@@ -1,0 +1,145 @@
+@using DroneBuildSimulation.DTOs.Requests
+@using DroneBuildSimulation.Entities
+@model UpdateProductRequest
+
+@{ ViewData["Title"] = "Edit Part"; }
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-lg-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning text-dark py-3">
+                <h4 class="mb-0 fw-bold">Edit Part: @Model.Name</h4>
+            </div>
+            <div class="card-body p-4">
+                
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    @* --- INFO UMUM --- *@
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tipe Komponen</label>
+                            @* ID TypeSelect penting untuk JS *@
+                            <select asp-for="Type" class="form-select" id="TypeSelect"
+                                    asp-items="Html.GetEnumSelectList<ComponentType>()">
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Brand</label>
+                            <input asp-for="Brand" class="form-control" />
+                            <span asp-validation-for="Brand" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Produk</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Harga</label>
+                            <input asp-for="Price" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Berat (g)</label>
+                            <input asp-for="Weight" class="form-control" />
+                        </div>
+                    </div>
+
+                    @* --- SPECS (Dynamic) --- *@
+                    <div id="specs-container" class="bg-light p-3 rounded mb-4 border">
+                        <h6 class="text-muted fw-bold mb-3">Spesifikasi Detail</h6>
+                        
+                        <div class="mb-3 dynamic-field" id="field-rating" style="display:none;">
+                            <label class="form-label">Rating (KV/Amps/C)</label>
+                            <input asp-for="Rating" class="form-control" />
+                        </div>
+
+                        <div class="mb-3 dynamic-field" id="field-capacity" style="display:none;">
+                            <label class="form-label">Kapasitas (mAh)</label>
+                            <input asp-for="Capacity" class="form-control" />
+                        </div>
+
+                        <div class="mb-3 dynamic-field" id="field-range" style="display:none;">
+                            <label class="form-label">Range/Power</label>
+                            <input asp-for="Range" class="form-control" />
+                        </div>
+
+                        <div class="mb-3 dynamic-field" id="field-size" style="display:none;">
+                            <label class="form-label">Ukuran / Size</label>
+                            <input asp-for="Size" class="form-control" />
+                        </div>
+                    </div>
+                    
+                    @* --- GAMBAR --- *@
+                    <h5 class="text-primary mb-3">Foto Produk</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label text-muted">Gambar Saat Ini:</label>
+                            <div class="border p-2 rounded text-center">
+                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                {
+                                    <img src="@Model.ImageUrl" class="img-fluid rounded" style="max-height: 100px;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Tidak ada gambar</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Ganti Foto (Opsional)</label>
+                            <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" onchange="previewImage(this)" />
+                            
+                            <div class="mt-2">
+                                <img id="imgPreview" src="#" style="max-height: 150px; display: none; border-radius: 8px;" class="shadow-sm border" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-warning btn-lg">Update Data</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Batal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            // Logic yang sama persis dengan Create
+            function toggleFields() {
+                var typeVal = $("#TypeSelect").val();
+                $(".dynamic-field").hide();
+                if (!typeVal) return;
+                var typeId = parseInt(typeVal);
+
+                if (typeId === 0) $("#field-size").show(); 
+                else if (typeId === 1 || typeId === 2) { $("#field-rating").show(); $("#field-size").show(); }
+                else if (typeId === 3 || typeId === 4) $("#field-range").show();
+                else if (typeId === 5) { $("#field-capacity").show(); $("#field-rating").show(); }
+            }
+
+            $("#TypeSelect").change(toggleFields);
+            toggleFields(); // PENTING: Run on load agar form terisi sesuai data existing
+        });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) { $('#imgPreview').attr('src', e.target.result).show(); }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

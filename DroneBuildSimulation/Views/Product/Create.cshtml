@@ -1,0 +1,183 @@
+@using DroneBuildSimulation.DTOs.Requests
+@using DroneBuildSimulation.Entities
+@model CreateProductRequest
+
+@{ ViewData["Title"] = "Input Part Baru"; }
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-lg-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-box-seam"></i> Input Part Baru</h4>
+            </div>
+            <div class="card-body p-4">
+                
+                @* ⚠️ enctype="multipart/form-data" WAJIB ADA UNTUK UPLOAD FILE *@
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-3"></div>
+
+                    @* --- BAGIAN 1: INFO UMUM --- *@
+                    <h5 class="text-primary mb-3">Informasi Dasar</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tipe Komponen <span class="text-danger">*</span></label>
+                            @* ID "TypeSelect" digunakan oleh JavaScript *@
+                            <select asp-for="Type" class="form-select" id="TypeSelect"
+                                    asp-items="Html.GetEnumSelectList<ComponentType>()">
+                                <option value="">-- Pilih Tipe --</option>
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Brand <span class="text-danger">*</span></label>
+                            <input asp-for="Brand" class="form-control" placeholder="Contoh: SpeedyBee, iFlight..." />
+                            <span asp-validation-for="Brand" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Produk <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" placeholder="Contoh: F405 V3 Flight Controller" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Harga (Rp)</label>
+                            <input asp-for="Price" type="number" class="form-control" placeholder="0" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Berat (gram)</label>
+                            <input asp-for="Weight" type="number" step="0.1" class="form-control" placeholder="0.0" />
+                        </div>
+                    </div>
+
+                    @* --- BAGIAN 2: SPESIFIKASI KHUSUS (Dynamic) --- *@
+                    <div id="specs-container" class="bg-light p-3 rounded mb-4 border">
+                        <h6 class="text-muted fw-bold mb-3"><i class="bi bi-gear-wide-connected"></i> Spesifikasi Detail</h6>
+                        
+                        @* Field RATING (Motor, Stack, Battery) *@
+                        <div class="mb-3 dynamic-field" id="field-rating" style="display:none;">
+                            <label class="form-label">Rating (KV / Ampere / C-Rating)</label>
+                            <input asp-for="Rating" class="form-control" type="number" placeholder="Contoh: 1950 (KV) atau 60 (Amps)" />
+                            <div class="form-text text-primary">Isi KV untuk Motor, Ampere untuk Stack, atau C untuk Baterai.</div>
+                        </div>
+
+                        @* Field CAPACITY (Battery) *@
+                        <div class="mb-3 dynamic-field" id="field-capacity" style="display:none;">
+                            <label class="form-label">Kapasitas (mAh)</label>
+                            <input asp-for="Capacity" class="form-control" type="number" placeholder="Contoh: 1300" />
+                        </div>
+
+                        @* Field RANGE (VTX, Receiver) *@
+                        <div class="mb-3 dynamic-field" id="field-range" style="display:none;">
+                            <label class="form-label">Jangkauan/Power (mW atau Meter)</label>
+                            <input asp-for="Range" class="form-control" type="number" step="0.1" placeholder="Contoh: 800 (mW)" />
+                        </div>
+
+                        @* Field SIZE (Frame, Stack, Motor, Prop) *@
+                        <div class="mb-3 dynamic-field" id="field-size" style="display:none;">
+                            <label class="form-label">Ukuran / Size</label>
+                            <input asp-for="Size" class="form-control" placeholder="Contoh: 5 Inch, 30x30mm" />
+                        </div>
+                        
+                        <p id="no-spec-msg" class="text-muted small fst-italic mb-0">Pilih tipe komponen untuk melihat spesifikasi khusus.</p>
+                    </div>
+                    
+                    @* --- BAGIAN 3: UPLOAD GAMBAR --- *@
+                    <h5 class="text-primary mb-3">Foto Produk</h5>
+                    <div class="mb-4">
+                        <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" onchange="previewImage(this)" />
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+                        <div class="mt-3 text-center p-3 border border-dashed rounded" style="background: #f8f9fa;">
+                            <img id="imgPreview" src="#" alt="Preview" style="max-height: 200px; display: none; border-radius: 8px;" class="shadow-sm" />
+                            <span id="imgPlaceholder" class="text-muted small">Preview gambar akan muncul di sini</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Simpan Data</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Batal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            
+            // --- 1. LOGIC DYNAMIC FORM ---
+            function toggleFields() {
+                var typeVal = $("#TypeSelect").val();
+                
+                // Hide all first
+                $(".dynamic-field").hide();
+                $("#no-spec-msg").show();
+
+                if (!typeVal) return;
+
+                // Enum Mapping: 
+                // Frame=0, Motor=1, Stack=2, VTX=3, Receiver=4, Battery=5
+                var typeId = parseInt(typeVal);
+
+                var hasSpec = false;
+
+                // Frame (0) -> Size
+                if (typeId === 0) {
+                    $("#field-size").show(); hasSpec = true;
+                }
+                // Motor (1) -> Rating (KV), Size
+                else if (typeId === 1) {
+                    $("#field-rating").show(); 
+                    $("#field-size").show(); 
+                    hasSpec = true;
+                }
+                // Stack (2) -> Rating (Amps), Size (Mounting)
+                else if (typeId === 2) {
+                    $("#field-rating").show();
+                    $("#field-size").show();
+                    hasSpec = true;
+                }
+                // VTX (3) -> Range
+                else if (typeId === 3) {
+                    $("#field-range").show(); hasSpec = true;
+                }
+                // Receiver (4) -> Range
+                else if (typeId === 4) {
+                    $("#field-range").show(); hasSpec = true;
+                }
+                // Battery (5) -> Capacity, Rating (C)
+                else if (typeId === 5) {
+                    $("#field-capacity").show();
+                    $("#field-rating").show();
+                    hasSpec = true;
+                }
+
+                if(hasSpec) $("#no-spec-msg").hide();
+            }
+
+            $("#TypeSelect").change(toggleFields);
+            toggleFields(); // Run on load
+        });
+
+        // --- 2. LOGIC PREVIEW IMAGE ---
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgPreview').attr('src', e.target.result).show();
+                    $('#imgPlaceholder').hide();
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

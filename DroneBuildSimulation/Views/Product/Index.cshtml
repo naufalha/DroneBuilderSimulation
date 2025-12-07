@@ -1,0 +1,129 @@
+@using DroneBuildSimulation.DTOs.Responses
+@model IEnumerable<ProductResponse>
+
+@{
+    ViewData["Title"] = "Stock Gudang FPV";
+}
+
+<div class="container mt-4">
+    @* --- HEADER SECTION --- *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary"><i class="bi bi-box-seam"></i> Stock Gudang FPV</h2>
+            <p class="text-muted mb-0">Kelola inventory parts drone kamu di sini.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+            <i class="bi bi-plus-lg"></i> Tambah Part Baru
+        </a>
+    </div>
+
+    @* --- TABLE SECTION --- *@
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-4 text-center">Gambar</th>
+                            <th>Tipe</th>
+                            <th>Nama Produk</th>
+                            <th>Brand</th>
+                            <th>Harga</th>
+                            <th>Berat</th>
+                            <th class="text-end pe-4">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    @* 1. KOLOM GAMBAR *@
+                                    <td class="ps-4 text-center" style="width: 100px;">
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" alt="@item.Name"
+                                                 class="shadow-sm"
+                                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #dee2e6;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light d-flex align-items-center justify-content-center text-muted mx-auto"
+                                                 style="width: 60px; height: 60px; border-radius: 8px; border: 1px solid #dee2e6;">
+                                                <small style="font-size: 0.7em;">No Img</small>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    @* 2. KOLOM TIPE *@
+                                    <td>
+                                        <span class="badge bg-info text-dark border border-info bg-opacity-25">
+                                            @item.Type
+                                        </span>
+                                    </td>
+
+                                    @* 3. KOLOM NAMA *@
+                                    <td class="fw-bold text-dark">
+                                        @item.Name
+                                        @* Tampilkan detail kecil sesuai tipe jika ada *@
+                                        @if (!string.IsNullOrEmpty(item.Size))
+                                        {
+                                            <div class="small text-muted fw-normal">Size: @item.Size</div>
+                                        }
+                                        @if (item.Rating.HasValue)
+                                        {
+                                            <div class="small text-muted fw-normal">Rating: @item.Rating</div>
+                                        }
+                                    </td>
+
+                                    @* 4. KOLOM BRAND *@
+                                    <td>@item.Brand</td>
+
+                                    @* 5. KOLOM HARGA *@
+                                    <td class="text-success fw-bold">@item.PriceFormatted</td>
+
+                                    @* 6. KOLOM BERAT *@
+                                    <td>@item.Weight <small class="text-muted">g</small></td>
+
+                                    @* 7. KOLOM AKSI (Edit & Delete) *@
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            
+                                            @* Tombol Edit *@
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Edit Data">
+                                                <i class="bi bi-pencil-square"></i> Edit
+                                            </a>
+
+                                            @* Tombol Delete (Pakai Form agar aman) *@
+                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" 
+                                                  onsubmit="return confirm('Yakin ingin menghapus @item.Name? Data yang dihapus tidak bisa dikembalikan.');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Data">
+                                                    <i class="bi bi-trash"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            @* TAMPILAN JIKA DATA KOSONG *@
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                        <h5>Belum ada data barang</h5>
+                                        <p class="mb-3">Mulai dengan menambahkan part drone baru.</p>
+                                        <a asp-action="Create" class="btn btn-primary btn-sm">Tambah Part Sekarang</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
