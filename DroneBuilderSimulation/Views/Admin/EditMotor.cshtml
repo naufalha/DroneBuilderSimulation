@@ -1,0 +1,76 @@
+@using DroneBuilderSimulation.DTOs.Requests
+@model UpdateMotorRequest
+
+<div class="container mt-4">
+    <div class="card shadow-sm" style="max-width: 800px; margin: auto;">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Edit Motor</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="EditMotor" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="Id" />
+                
+                @if(ViewBag.CurrentImageUrl != null)
+                {
+                    <div class="text-center mb-3">
+                        <img src="@ViewBag.CurrentImageUrl" class="img-thumbnail" style="height: 100px;">
+                        <p class="text-muted small">Current Image</p>
+                    </div>
+                }
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label">Model Name</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Manufacturer" class="form-label">Manufacturer</label>
+                        <input asp-for="Manufacturer" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="Price" class="form-label">Price ($)</label>
+                        <input asp-for="Price" type="number" step="0.01" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="WeightGrams" class="form-label">Weight (g)</label>
+                        <input asp-for="WeightGrams" type="number" step="0.1" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ImageFile" class="form-label">Change Image</label>
+                        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label asp-for="Kv" class="form-label">KV</label>
+                        <input asp-for="Kv" type="number" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="StatorSize" class="form-label">Stator Size</label>
+                        <input asp-for="StatorSize" type="number" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="MaxContinuousCurrentAmps" class="form-label">Max Amps</label>
+                        <input asp-for="MaxContinuousCurrentAmps" type="number" step="0.1" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="MaxPowerWatts" class="form-label">Max Watts</label>
+                        <input asp-for="MaxPowerWatts" type="number" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="MotorList" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-success">Update Motor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

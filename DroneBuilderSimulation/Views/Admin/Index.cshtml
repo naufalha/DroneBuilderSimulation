@@ -1,0 +1,72 @@
+@using DroneBuilderSimulation.DTOs.Responses
+@model AdminDashboardResponse
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6">🛠️ Component Admin</h1>
+            <p class="text-muted">Manage your drone parts inventory</p>
+        </div>
+        <div>
+            <span class="badge bg-secondary fs-6 p-2">Total Parts: @Model.TotalComponents</span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Frames</h5>
+                    <p class="display-4 fw-bold">@Model.FrameCount</p>
+                    <div class="d-grid gap-2">
+                        <a asp-action="FrameList" class="btn btn-light btn-sm text-primary fw-bold">Manage List</a>
+                        <a asp-action="AddFrame" class="btn btn-outline-light btn-sm">Add New</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-success h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Motors</h5>
+                    <p class="display-4 fw-bold">@Model.MotorCount</p>
+                    <div class="d-grid gap-2">
+                        <a asp-action="MotorList" class="btn btn-light btn-sm text-success fw-bold">Manage List</a>
+                        <a asp-action="AddMotor" class="btn btn-outline-light btn-sm">Add New</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-dark bg-warning h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Batteries</h5>
+                    <p class="display-4 fw-bold">@Model.BatteryCount</p>
+                    <div class="d-grid gap-2">
+                        <a asp-action="BatteryList" class="btn btn-light btn-sm fw-bold">Manage List</a>
+                        <a asp-action="AddBattery" class="btn btn-outline-dark btn-sm">Add New</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-info h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Stacks (FC)</h5>
+                    <p class="display-4 fw-bold">@Model.StackCount</p>
+                    <div class="d-grid gap-2">
+                        <a asp-action="StackList" class="btn btn-light btn-sm text-info fw-bold">Manage List</a>
+                        <a asp-action="AddStack" class="btn btn-outline-light btn-sm">Add New</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

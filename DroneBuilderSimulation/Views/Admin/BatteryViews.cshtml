@@ -1,0 +1,56 @@
+@using DroneBuilderSimulation.Models.Entities
+@model IEnumerable<Battery>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Battery Inventory</h2>
+        <a asp-action="AddBattery" class="btn btn-warning text-dark">+ Add New Battery</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning">No batteries found.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Specs (Cells / Capacity)</th>
+                        <th>Price</th>
+                        <th>Weight</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="width: 80px;">
+                                <img src="@item.ImageUrl" class="img-thumbnail" style="height: 50px; width: 50px; object-fit: cover;">
+                            </td>
+                            <td>@item.Name</td>
+                            <td>
+                                <span class="badge bg-warning text-dark">@item.CellCountS S</span>
+                                <small>@item.CapacityMah mAh</small>
+                            </td>
+                            <td class="text-success fw-bold">$@item.Price</td>
+                            <td>@item.WeightGrams g</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a asp-action="EditBattery" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <form asp-action="DeleteBattery" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Delete?');" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
