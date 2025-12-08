@@ -6,16 +6,15 @@ namespace DroneBuildSimulation.DTOs.Requests;
 
 public class UpdateProductRequest
 {
-    [Required]
+   
     public int Id { get; set; }
 
-    [Required]
+    
     public ComponentType Type { get; set; }
 
-    [Required]
-    public string Name { get; set; } = string.Empty;
+       public string Name { get; set; } = string.Empty;
 
-    [Required]
+
     public string Brand { get; set; } = string.Empty;
 
     public decimal Price { get; set; }

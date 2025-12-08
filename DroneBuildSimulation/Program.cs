@@ -17,6 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // 3. AutoMapper
 builder.Services.AddAutoMapper(typeof(ProductProfile));
+builder.Services.AddScoped<IFileService, FileService>();
 
 // 4. Dependency Injection (Repository & Service)
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
